@@ -54,7 +54,7 @@ module.exports =
 
 const core = __webpack_require__(470)
 
-const versionSeparator = '\n## '
+const versionSeparator = /\n# |\n## /
 const semverLinkRegex =
   /^\[v?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?\]/
 const unreleasedLinkRegex = /^\[unreleased\]/i
@@ -150,7 +150,14 @@ const readFile = utils.promisify(fs.readFile)
 exports.main = async function main() {
   try {
     const changelogPath = core.getInput('path') || './CHANGELOG.md'
-    const targetVersion = core.getInput('version') || null
+    let targetVersion = core.getInput('version') || null
+    if(targetVersion){
+      const versionRegex = /\d+\.\d+\.\d+/
+      const match = targetVersion.match(versionRegex)
+      if (match) {
+        targetVersion = match[0]
+      }
+    }
     const validationLevel = core.getInput('validation_level') || 'none'
 
     if (targetVersion == null) {
