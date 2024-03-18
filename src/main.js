@@ -14,7 +14,14 @@ const readFile = utils.promisify(fs.readFile)
 exports.main = async function main() {
   try {
     const changelogPath = core.getInput('path') || './CHANGELOG.md'
-    const targetVersion = core.getInput('version') || null
+    let targetVersion = core.getInput('version') || null
+    if(targetVersion){
+      const versionRegex = /\d+\.\d+\.\d+/
+      const match = targetVersion.match(versionRegex)
+      if (match) {
+        targetVersion = match[0]
+      }
+    }
     const validationLevel = core.getInput('validation_level') || 'none'
 
     if (targetVersion == null) {
